@@ -5,6 +5,7 @@
         $titre = htmlspecialchars($_POST['titre']);
         $duree = htmlspecialchars($_POST['duree']);
         $date = htmlspecialchars($_POST['date_de_sortie']);
+        $file = htmlspecialchars($file = $_FILES['userfile']);
 
         $request = $bdd->prepare('  INSERT INTO film (titre,duree,date_de_sortie)
                                     VALUES (:titre,:duree,:date_de_sortie)
@@ -15,7 +16,8 @@
             'duree'             =>$duree,
             'date_de_sortie'    =>$date
         ]);
-    };
+        
+    };   
 ?>
 
 <!DOCTYPE html>
@@ -40,11 +42,16 @@
         <label for="date_de_sortie">L'annee de sortie du film</label>
         <input type="text" id="date_de_sortie" name="date_de_sortie" required>
 
+        <label for="userfile">Votre image a upload</label>
+        <input type="file" name="userfile" id="userfile">
+
         <button>Ajouter</button>
     </form>
 
     <?php 
-
+            $file = $_FILES['images'];
+            move_uploaded_file($file['tmp_name'],$file['name']);
+            echo '<img src="'.$file['name'].'">'; 
     ?>
 
 </body>
