@@ -1,20 +1,33 @@
 <?php
+
+    session_start();
+
     $bdd = new PDO('mysql:host=localhost;dbname=film;charset=utf8','root','');
 
+    if (isset($_FILES['userfile'])){
+        $file = $_FILES['userfile'];
+
+        $uniqueName = uniqid() . "-" . basename($file['name']);
+        $uploadDir = 'images/';
+        $uploadPath = $uploadDir. $uniqueName;
+
+        move_uploaded_file($file['tmp_name'],$uploadPath);};
+    
     if (isset($_POST["titre"]) && isset($_POST["duree"]) && isset($_POST["date_de_sortie"])){
         $titre = htmlspecialchars($_POST['titre']);
         $duree = htmlspecialchars($_POST['duree']);
         $date = htmlspecialchars($_POST['date_de_sortie']);
-        $file = htmlspecialchars($file = $_FILES['userfile']);
+        $file = htmlspecialchars($uploadPath);
 
-        $request = $bdd->prepare('  INSERT INTO film (titre,duree,date_de_sortie)
-                                    VALUES (:titre,:duree,:date_de_sortie)
+        $request = $bdd->prepare('  INSERT INTO film (titre,duree,date_de_sortie,userfile)
+                                    VALUES (:titre,:duree,:date_de_sortie,:userfile)
                                 ');
 
         $request->execute([
             'titre'             =>$titre,
             'duree'             =>$duree,
-            'date_de_sortie'    =>$date
+            'date_de_sortie'    =>$date,
+            'userfile'          =>$file
         ]);
         
     };   
@@ -32,7 +45,7 @@
 <body>
     <?php include "nav.php" ?>
 
-    <form action="add.php" method="POST">
+    <form action="add.php" method="POST" enctype="multipart/form-data">
         <label for="titre">Le titre de votre film</label>
         <input type="text" id="titre" name="titre" required>
 
@@ -47,12 +60,9 @@
 
         <button>Ajouter</button>
     </form>
-
-    <?php 
-            $file = $_FILES['images'];
-            move_uploaded_file($file['tmp_name'],$file['name']);
-            echo '<img src="'.$file['name'].'">'; 
-    ?>
+    <?php if (isset($_FILES['userfile'])){
+        echo "<img src='" . "$uploadPath" . "'>";
+        };?>
 
 </body>
 </html>

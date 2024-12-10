@@ -1,4 +1,7 @@
 <?php
+
+    session_start();
+
     $bdd = new PDO('mysql:host=localhost;dbname=film;charset=utf8','root','');
 
     $request = $bdd ->prepare(' SELECT * FROM film');
@@ -37,6 +40,11 @@
             <?php
                echo $data['date_de_sortie'];
             ?>
+        <?php  if (isset($data['userfile'])) : ?>
+
+            <img src="<?php echo $data['userfile'] ?>" alt="Poster de <?php echo $data['titre']?>">
+
+        <?php endif ?>
             <a href="voirplus.php?id=<?php echo $data['id'] ?>">Voir plus</a>
             <a href="modifier.php?id=<?php echo $data['id'] ?>">Modifier</a>
             <a href="delete.php?id=<?php echo $data['id']?>">Supprimer</a>
